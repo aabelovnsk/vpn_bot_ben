@@ -1,6 +1,5 @@
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from aiogram.utils import executor
 import pandas as pd
 from datetime import datetime, timedelta
 import os
