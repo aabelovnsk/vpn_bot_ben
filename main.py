@@ -68,8 +68,8 @@ class StartMenu:
 class ConnectionData:
     @staticmethod
     async def send(user_id, user_peer):
-        await bot.send_document(chat_id=user_id, document=open(f'/home/bennyhils/wirehole/wirefuard/peer{user_peer}/peer{user_peer}.conf', 'rb'))
-        await bot.send_photo(chat_id=user_id, photo=open(f'/home/bennyhils/wirehole/wirefuard/peer{user_peer}/peer{user_peer}.png', 'rb'))
+        await bot.send_document(chat_id=user_id, document=open(f'/home/bennyhils/wirehole/wireguard/peer{user_peer}/peer{user_peer}.conf', 'rb'))
+        await bot.send_photo(chat_id=user_id, photo=open(f'/home/bennyhils/wirehole/wireguard/peer{user_peer}/peer{user_peer}.png', 'rb'))
 
 class Instructions:
     @staticmethod
