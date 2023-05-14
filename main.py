@@ -77,15 +77,15 @@ class MainMenu:
     @staticmethod
     async def show(user_id):
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-        keyboard.add(KeyboardButton('Connection Data'), KeyboardButton('Instructions'), KeyboardButton('Check Access'), KeyboardButton('Extend'))
-        await bot.send_message(chat_id=user_id, text="Choose an option:", reply_markup=keyboard)
+        keyboard.add(KeyboardButton('Данные для подключения'), KeyboardButton('Инструкция'), KeyboardButton('Проверить доступ'), KeyboardButton('Продлить доступ'))
+        await bot.send_message(chat_id=user_id, text="Что вы хотите:", reply_markup=keyboard)
 
 class StartMenu:
     @staticmethod
     async def show(user_id):
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-        keyboard.add(KeyboardButton('Buy'), KeyboardButton('No'))
-        await bot.send_message(chat_id=user_id, text="Brother, do you need a VPN?", reply_markup=keyboard)
+        keyboard.add(KeyboardButton('Да'), KeyboardButton('Нет'))
+        await bot.send_message(chat_id=user_id, text="Хотите купить VPN?", reply_markup=keyboard)
 
 class ConnectionData:
     @staticmethod
@@ -107,7 +107,7 @@ async def start(message: types.Message):
         user.create(username=message.from_user.username)
         await StartMenu.show(user_id=message.from_user.id)
 
-@dp.message_handler(lambda message: message.text == 'Buy')
+@dp.message_handler(lambda message: message.text == 'Да')
 async def buy(message: types.Message):
     user = User(user_id=message.from_user.id)
     # Process payment with Bank 131 here
@@ -115,31 +115,31 @@ async def buy(message: types.Message):
     user.update_payment()
     await MainMenu.show(user_id=message.from_user.id)
 
-@dp.message_handler(lambda message: message.text == 'Connection Data')
+@dp.message_handler(lambda message: message.text == 'Данные для подключения')
 async def send_connection_data(message: types.Message):
     user = User(user_id=message.from_user.id)
     if user.access_status() == 'deny':
-        await message.reply("Access is denied, press the 'Check Access' button")
+        await message.reply("Доступ зарещен, проверьте с помощью кнопки 'Проверить доступ'")
         await MainMenu.show(user_id=message.from_user.id)
     else:
         await ConnectionData.send(user_id=message.from_user.id, user_peer=user.get_user_peer())
         await MainMenu.show(user_id=message.from_user.id)
 
-@dp.message_handler(lambda message: message.text == 'Instructions')
+@dp.message_handler(lambda message: message.text == 'Инструкция')
 async def send_instructions(message: types.Message):
     await Instructions.send(user_id=message.from_user.id)
     await MainMenu.show(user_id=message.from_user.id)
 
-@dp.message_handler(lambda message: message.text == 'Check Access')
+@dp.message_handler(lambda message: message.text == 'Проверить доступ')
 async def check_access(message: types.Message):
     user = User(user_id=message.from_user.id)
     if user.access_status() == 'deny':
-        await message.reply("Paid period has expired")
+        await message.reply("Необходимо оплатить доступ к VPN")
     else:
-        await message.reply("Access is granted")
+        await message.reply("Доступ предоставлен")
     await MainMenu.show(user_id=message.from_user.id)
 
-@dp.message_handler(lambda message: message.text == 'Extend')
+@dp.message_handler(lambda message: message.text == 'Продлить доступ')
 async def extend(message: types.Message):
     user = User(user_id=message.from_user.id)
     # Process payment with Bank 131 here
