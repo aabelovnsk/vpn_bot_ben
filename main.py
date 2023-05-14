@@ -4,6 +4,28 @@ import pandas as pd
 from datetime import datetime, timedelta
 import os
 import csv
+import schedule
+import time
+import threading
+
+def check_dates():
+    df = pd.read_csv('users.csv')
+    df['end_date'] = pd.to_datetime(df['end_date'], format="%Y-%m-%d")
+    df.loc[df['end_date'] < pd.Timestamp.now(), 'access'] = 'deny'
+    df.to_csv('users.csv', index=False)
+
+
+# Настроим расписание
+schedule.every(10).seconds.do(check_dates)
+
+# Запустим в отдельном потоке, чтобы не блокировать основной код бота
+def run_schedule():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+
+threading.Thread(target=run_schedule).start()
 
 TOKEN = '1214560409:AAEn5diTdrHgAzGvAaC0TlgPunMWdT5sdrE'
 
@@ -28,7 +50,7 @@ class User:
             'id': self.user_id,
             'username': username,
             'user_peer': len(self.dataframe) + 1,
-            'hello_date': datetime.now().strftime("%d:%m:%Y"),
+            'hello_date': datetime.now().strftime("%Y-%m-%d"),
             'start_date': '',
             'end_date': '',
             'access': 'deny'
@@ -40,8 +62,8 @@ class User:
         self.dataframe.to_csv('users.csv', index=False)
 
     def update_payment(self):
-        self.dataframe.loc[self.dataframe['id'] == self.user_id, 'start_date'] = datetime.now().strftime("%d:%m:%Y")
-        self.dataframe.loc[self.dataframe['id'] == self.user_id, 'end_date'] = (datetime.now() + timedelta(days=30)).strftime("%d:%m:%Y")
+        self.dataframe.loc[self.dataframe['id'] == self.user_id, 'start_date'] = datetime.now().strftime("%Y-%m-%d")
+        self.dataframe.loc[self.dataframe['id'] == self.user_id, 'end_date'] = (datetime.now() + timedelta(seconds=20)).strftime("%Y-%m-%d")
         self.dataframe.loc[self.dataframe['id'] == self.user_id, 'access'] = "accept"
         self.save()
 
